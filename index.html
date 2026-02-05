@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine 💘</title>
+
+<style>
+    body {
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
+
+    .card {
+        background: white;
+        width: min(90%, 600px);
+        padding: 60px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 2;
+    }
+
+    h1 {
+        color: #ff4d6d;
+        margin-bottom: 50px;
+        font-size: 1.8rem;
+    }
+
+    button {
+        width: 120px;
+        height: 45px;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        position: absolute; /* FISSO nella card */
+    }
+
+    #yesBtn {
+        background-color: #2ecc71;
+        color: white;
+        left: 20%;
+        transform: translateX(-50%);
+        bottom: 20px; /* sotto la scritta */
+    }
+
+    #noBtn {
+        background-color: #e74c3c;
+        color: white;
+        left: calc(50% + 150px); /* leggermente a destra inizialmente */
+        bottom: 20px;
+        position: absolute;
+    }
+
+    #gifContainer {
+        display: none;
+        margin-top: 20px;
+    }
+    
+    #signatureImg {
+    position: fixed;        /* sempre in basso a destra */
+    bottom: 10px;           /* distanza dal bordo */
+    right: 10px;
+    width: 100px;           /* puoi ridurre o ingrandire */
+    opacity: 0.7;           /* leggermente trasparente */
+    pointer-events: none;   /* non interferisce con click */
+    z-index: 9999;          /* sempre sopra agli altri elementi */
+    }
+
+    #gifContainer img {
+        width: 220px;
+        border-radius: 15px;
+    }
+
+    /* CUORI */
+    .heart {
+        position: fixed;
+        top: -10px;
+        font-size: 20px;
+        animation: fall linear forwards;
+        pointer-events: none;
+    }
+
+    @keyframes fall {
+        to {
+            transform: translateY(110vh);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+<img id="signatureImg" src="images\sign.png" alt="by Suhan">
+<div class="card">
+    <h1 id="question">Giorgina vuoi essere la mia Valentine? 💖</h1>
+
+    <button id="yesBtn">Sì 💘</button>
+    <button id="noBtn">No 💔</button>
+
+    <div id="gifContainer">
+        <img src="https://i.redd.it/ocsic8sc06se1.gif">
+    </div>
+</div>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const question = document.getElementById("question");
+const gifContainer = document.getElementById("gifContainer");
+
+const triggerDistance = 100;
+let isDetached = false;
+
+// sgancia il bottone No senza influenzare il layout
+function detachNoButton() {
+    if(isDetached) return;
+
+    const rect = noBtn.getBoundingClientRect();
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = rect.left + "px";
+    noBtn.style.top = rect.top + "px";
+    noBtn.style.zIndex = "999";
+
+    isDetached = true;
+}
+
+// muove il bottone No su tutta la pagina
+function moveNoButton() {
+    const padding = 20;
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
+}
+
+// mouse
+document.addEventListener("mousemove", (e) => {
+    const rect = noBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    const distance = Math.sqrt(dx*dx + dy*dy);
+
+    if(distance < triggerDistance){
+        detachNoButton();
+        moveNoButton();
+    }
+});
+
+// touch
+document.addEventListener("touchmove", (e) => {
+    const touch = e.touches[0];
+    detachNoButton();
+    moveNoButton();
+});
+
+// click sì
+yesBtn.addEventListener("click", () => {
+    question.textContent = "Sapevo che avresti detto sì 😏";
+    gifContainer.style.display = "block";
+    noBtn.style.display = "none";
+    yesBtn.style.display = "none";
+    startHearts();
+});
+
+// cuori
+function startHearts() {
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = 3 + Math.random() * 3 + "s";
+        heart.style.fontSize = (16 + Math.random()*20) + "px";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+    }, 300);
+}
+</script>
+
+</body>
+</html>
